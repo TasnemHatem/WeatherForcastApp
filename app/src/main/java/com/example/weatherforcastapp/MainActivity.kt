@@ -1,17 +1,23 @@
 package com.example.weatherforcastapp
 
+import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import com.example.weatherforcastapp.favourite.view.FavouriteFragment
+import com.example.weatherforcastapp.favourite.view.OnClick
 import com.example.weatherforcastapp.home.view.HomeFragment
+import com.example.weatherforcastapp.map.view.MapsActivity
+import com.example.weatherforcastapp.model.FavouriteLocation
 import com.example.weatherforcastapp.setting.view.SettingFragment
 import com.google.android.material.navigation.NavigationView
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() ,OnClick{
     lateinit var toggle:ActionBarDrawerToggle
     lateinit var  drawerLayout:DrawerLayout
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,5 +66,24 @@ class MainActivity : AppCompatActivity() {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onClickCityView(favouriteLocation: FavouriteLocation) {
+        val sharedPreferences = getSharedPreferences("MyPrefrence", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("Favourite",true)
+
+       // var fm = supportFragmentManager?.findFragmentById(R.id.home_item) as? HomeFragment
+        //fm?.setData(favouriteLocation)
+        editor.putString("lat",favouriteLocation.lat)
+        editor.putString("lng",favouriteLocation.lng)
+        editor.commit()
+        var fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.frameLayout,HomeFragment())
+        fragmentTransaction.commit()
+//        var intent = Intent(applicationContext, MapsActivity::class.java)
+//        intent.putExtra("lat",favouriteLocation.lat)
+//        intent.putExtra("lng",favouriteLocation.lng)
+//        startActivity(intent)
     }
 }

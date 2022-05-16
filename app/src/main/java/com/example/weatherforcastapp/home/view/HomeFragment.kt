@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
@@ -16,11 +17,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -34,6 +37,10 @@ import com.google.android.gms.location.*
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
 import kotlin.collections.ArrayList
+import android.app.Activity
+import android.content.res.Configuration
+import android.content.res.Resources
+import android.os.Build
 
 
 class HomeFragment : Fragment() {
@@ -54,6 +61,10 @@ class HomeFragment : Fragment() {
     private lateinit var txtDate:TextView
     private lateinit var txtStatus:TextView
     private lateinit var txtTemp : TextView
+    //units
+    private lateinit var txtTempUnite : TextView
+    private lateinit var txtWindUnite : TextView
+
 
     //Detailed current
     private lateinit var txtPressure:TextView
@@ -68,9 +79,12 @@ class HomeFragment : Fragment() {
 
      var myLat:String ="30.033333"
    var myLong :String = "-90"//"31.233334"
+
+    lateinit var fLat:String
+   lateinit var fLong :String
     lateinit var language:String
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-
+ lateinit var  units:String
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
@@ -78,33 +92,71 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       language = Locale.getDefault().getDisplayLanguage()
+        PreferenceManager.setDefaultValues(requireContext(),R.xml.preference,false)
+        val sharedPreferencesseting = PreferenceManager.getDefaultSharedPreferences(requireContext())
+         units = sharedPreferencesseting.getString("UNIT_SYSTEM","metric").toString()
+        language =  sharedPreferencesseting.getString("LANGUAGE_SYSTEM","en").toString()
+//        if(language .equals("ar")){
+//           setLocale(requireActivity(),"ar")
+//           // language("ar")
+//        }
+
+        val configuration: Configuration = requireContext().resources.configuration
+        var locale = Locale(language)
+        Locale.setDefault(locale)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            configuration.setLocale(locale)
+
+        } else {
+            configuration.locale = locale
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            activity?.getApplicationContext()?.createConfigurationContext(configuration);
+            resources.updateConfiguration(configuration, resources.displayMetrics)
+
+        }
+      // language = Locale.getDefault().getDisplayLanguage()
+        val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("MyPrefrence", Context.MODE_PRIVATE)
         initUI(view)
         initHoursRecycler(view)
         initDaysRecycler(view)
+        units()
         fusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(requireActivity())
-       // getLastLocation()
 
-        //// be awerrrrrrrrrrrrrrrrrr of activity !!
         homeViewModelFactory = HomeViewModelFactory(Repository.getInstance(RemoteSource.getInstance(), ConcreteLocalSource(requireActivity().applicationContext), activity?.applicationContext))
         viewModel = ViewModelProvider(this, homeViewModelFactory)[HomeViewModel::class.java]
+        if( sharedPreferences.getBoolean("Favourite", false)){
 
+            myLat = sharedPreferences.getString("lat", "30").toString()
+            myLong = sharedPreferences.getString("lng", "-90").toString()
+            viewModel.getWeather(myLat,myLong ,units, language)
+                .observe(viewLifecycleOwner) { weather ->
+                    if (weather != null)
+                        updateUI(weather)
+                }
+            val editor = sharedPreferences.edit()
+            editor.putBoolean("Favourite",false)
+            editor.commit()
+
+        }else {
+           // if(sharedPreferencesseting.getBoolean("USE_DEVICE_LOCATION",true)){}
+//            val mapPreference: Preference? = findPreference("CUSTOM_LOCATION")
+//            mapPreference?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+//                if (sharedPreferences.getBoolean("CUSTOM_LOCATION", true)) {
+//                 //navigate to map activity
+//                }
+//                true
+//            }
 
         if(isNetworkAvailable(requireContext())) {
 
             getLastLocation()
 
-//                    viewModel.getWeather(myLat, myLong, "metric", "en")
-//                        .observe(viewLifecycleOwner) { weather ->
-//                            if (weather != null)
-//                                updateUI(weather)
- //                       }
-
-        }else{
-            viewModel.getWeatherfromDataBase().observe(viewLifecycleOwner){weather->
-                if(weather!=null) {
-                    updateUI(weather)
-
+            } else {
+                viewModel.getWeatherfromDataBase().observe(viewLifecycleOwner) { weather ->
+                    if (weather != null) {
+                        updateUI(weather)
+                    }
                 }
             }
         }
@@ -124,6 +176,9 @@ class HomeFragment : Fragment() {
         txtTVisabilty = view.findViewById(R.id.visibility_text)
         progressBar = view.findViewById(R.id.progress)
         image = view.findViewById(R.id.weather_image)
+
+        txtTempUnite = view.findViewById(R.id.temp_unit_card_textView)
+        txtWindUnite = view.findViewById(R.id.wind_text_unit)
     }
 
     private fun initHoursRecycler(view: View){
@@ -190,8 +245,6 @@ class HomeFragment : Fragment() {
                 getLatAndLong()
 
             } else {
-
-               // locationNotEnable()
                 Toast.makeText(requireContext(),"Turn your location",Toast.LENGTH_LONG).show()
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
@@ -248,7 +301,7 @@ class HomeFragment : Fragment() {
             } else {
                 myLat = location?.latitude.toString()
                 myLong = location?.longitude.toString()
-                viewModel.getWeather(myLat, myLong, "metric", language)
+                viewModel.getWeather(myLat, myLong, units, language)
                     .observe(viewLifecycleOwner) { weather ->
                         if (weather != null)
                             updateUI(weather)
@@ -277,7 +330,7 @@ class HomeFragment : Fragment() {
            val location = locationResult.lastLocation
             myLat = location?.latitude.toString()
             myLong = location?.longitude.toString()
-            viewModel.getWeather(myLat, myLong, "metric", language)
+            viewModel.getWeather(myLat, myLong,  units, language)
                 .observe(viewLifecycleOwner) { weather ->
                     if (weather != null)
                         updateUI(weather)
@@ -289,4 +342,31 @@ class HomeFragment : Fragment() {
         super.onResume()
         getLastLocation()
     }
+
+    fun units(){
+        when(units){
+           "METRIC" ->{
+               txtTempUnite.text = "C°"
+               txtWindUnite.text= "m/s"
+           }
+            "IMPERIAL" ->{
+                txtTempUnite.text = "F°"
+                txtWindUnite.text= "mil/h"
+            }
+            "STANDARD" ->{
+                txtTempUnite.text = "K°"
+                txtWindUnite.text= "m/s"
+            }
+        }
+    }
+
+    fun setLocale(activity: Activity, languageCode: String?) {
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+        val resources: Resources = activity.resources
+        val config: Configuration = resources.getConfiguration()
+        config.setLocale(locale)
+        resources.updateConfiguration(config, resources.getDisplayMetrics())
+    }
+
 }

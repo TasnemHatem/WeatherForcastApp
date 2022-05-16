@@ -7,4 +7,7 @@ interface RepositoryInterfase {
     fun insert(weather: MyRespons)
     val getWeather: LiveData<MyRespons>
 
+    fun insertFavouriteLocation(favouriteLocation: FavouriteLocation)
+    val getFavourites: LiveData<List<FavouriteLocation>>
+
 }

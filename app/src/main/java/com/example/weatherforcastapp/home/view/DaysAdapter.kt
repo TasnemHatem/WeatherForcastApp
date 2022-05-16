@@ -1,5 +1,6 @@
 package com.example.weatherforcastapp.home.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -39,7 +40,7 @@ class DaysAdapter(var context: Context?, var dayList: List<Daily> ) : RecyclerVi
 
     override fun onBindViewHolder(holder: DaysAdapter.ViewHolder, position: Int) {
         var current = dayList[position]
-        holder.txtDay.setText(dateFormat(current.dt))
+        holder.txtDay.setText(dateFormat(current.dt,context))
         holder.txtTemp.setText("${current.temp.max.toInt()}/${current.temp.min.toInt()}")
         holder.txtStatus.setText(current.weather[0].description)
 
@@ -47,24 +48,22 @@ class DaysAdapter(var context: Context?, var dayList: List<Daily> ) : RecyclerVi
         Glide.with(context?.applicationContext!!).load("https://openweathermap.org/img/wn/${current.weather[0].icon}@2x.png").into(holder.image)
     }
 
-    fun dateFormat(milliSeconds: Int):String{
-        // Create a calendar object that will convert the date and time value in milliseconds to date.
+    @SuppressLint("ResourceType")
+    fun dateFormat(milliSeconds: Int, context: Context?):String{
         val calendar: Calendar = Calendar.getInstance()
         calendar.setTimeInMillis(milliSeconds.toLong() * 1000)
-       // var month = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
         var day=calendar.get(Calendar.DAY_OF_WEEK)
+
         return when (day) {
-            1 ->  "Sun"
-            2 ->  "Mon"
-            3 ->  "Tue"
-            4 ->  "Wed"
-            5 ->  "Thu"
-            6 ->  "Fri"
-            7 ->  "Sat"
+            1 -> context?.resources?.getString(R.string.sun).toString() //"Sun"
+            2 -> context?.resources?.getString(R.string.mon).toString() //"Mon"
+            3 -> context?.resources?.getString(R.string.tue).toString() // "Tue"
+            4 -> context?.resources?.getString(R.string.wed).toString()//"Wed"
+            5 -> context?.resources?.getString(R.string.thu).toString()//"Thu"
+            6 -> context?.resources?.getString(R.string.fri).toString()// "Fri"
+            7 -> context?.resources?.getString(R.string.sat).toString()//"Sat"
             else -> "no"
         }
-       // var year=calendar.get(Calendar.YEAR).toString()
-      //  return day//+"/"+month// +"/"+year
 
     }
 }

@@ -13,4 +13,22 @@
     <string name="Cloud">Cloud</string>
     <string name="ultraViolet">Ultra  Violet</string>
     <string name="Visibility">Visibility</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="confirmation_message">Confirm Message</string>
+    <string name="Do_You_want">Do you want add this location ?</string>
+    <string name="ok">ok</string>
+    <string name="location">Location</string>
+    <string name="use_device_location">Use Device Location</string>
+    <string name="choose_location">Choose Location</string>
+    <string name="units">Units</string>
+    <string name="unit_system">Unit System</string>
+    <string name="language">Language</string>
+    <string name="lang_system">languade System</string>
+    <string name="sun">Sun</string>
+    <string name="mon">Mon</string>
+    <string name="tue">Tue</string>
+    <string name="wed">Wed</string>
+    <string name="thu">Thu</string>
+    <string name="fri">Fri</string>
+    <string name="sat">Sat</string>
 </resources>

@@ -29,5 +29,12 @@ class Repository  private constructor(var remoteSourceInterface: RemoteSourceInt
     override val getWeather: LiveData<MyRespons>
         get() = localSourceInterface.getWeather
 
+    override fun insertFavouriteLocation(favouriteLocation: FavouriteLocation) {
+        localSourceInterface.insertFavouriteLocation(favouriteLocation)
+    }
+
+    override val getFavourites: LiveData<List<FavouriteLocation>>
+        get() = localSourceInterface.getFavourites
+
 
 }
