@@ -16,5 +16,10 @@
         android:id="@+id/setting_item"
         android:icon="@drawable/ic_baseline_settings_24"
         android:title="@string/Setting" />
+
+        <item
+            android:id="@+id/alerts_item"
+            android:icon="@drawable/ic_baseline_alarm_24"
+            android:title="@string/Alerts" />
     </group>
 </menu>

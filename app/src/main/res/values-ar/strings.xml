@@ -32,4 +32,5 @@
     <string name="thu">الخميس</string>
     <string name="fri">الجمعه</string>
     <string name="sat">السبت</string>
+    <string name="Alerts">Alerts</string>
 </resources>

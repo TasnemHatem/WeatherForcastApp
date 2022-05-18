@@ -1,14 +1,11 @@
 package com.example.weatherforcastapp.setting.view
 
-import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import com.example.weatherforcastapp.R
-import com.example.weatherforcastapp.map.view.MapsActivity
 import java.util.*
 
 
@@ -20,17 +17,6 @@ class SettingFragment :  PreferenceFragmentCompat(){
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val language = sharedPreferences.getString("LANGUAGE_SYSTEM", "").toString()
-
-
-        val mapPreference: Preference? = findPreference("CUSTOM_LOCATION")
-        var test =sharedPreferences.getBoolean("CUSTOM_LOCATION", true)
-        mapPreference?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            if (sharedPreferences.getBoolean("CUSTOM_LOCATION", true)) {
-
-                startActivity(Intent(requireContext(),MapsActivity::class.java))
-            }
-            true
-        }
 
         // get the language and apply iy
         val configuration: Configuration = requireContext().resources.configuration
@@ -53,8 +39,4 @@ class SettingFragment :  PreferenceFragmentCompat(){
 
 
     }
-
-
-
-
 }

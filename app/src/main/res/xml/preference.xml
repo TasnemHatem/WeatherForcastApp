@@ -13,7 +13,11 @@
         <Preference
             android:dependency="USE_DEVICE_LOCATION"
             android:key="CUSTOM_LOCATION"
-            android:summary="@string/choose_location"/>
+            android:summary="@string/choose_location">
+            <intent
+                android:targetPackage="com.example.weatherforcastapp"
+                android:targetClass="com.example.weatherforcastapp.map.view.MapsActivity"/>
+        </Preference>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/units"

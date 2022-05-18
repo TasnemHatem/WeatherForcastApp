@@ -1,18 +1,15 @@
 package com.example.weatherforcastapp
 
-import android.content.Intent
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
+import com.example.weatherforcastapp.alert.view.AlertFragment
 import com.example.weatherforcastapp.favourite.view.FavouriteFragment
 import com.example.weatherforcastapp.favourite.view.OnClick
 import com.example.weatherforcastapp.home.view.HomeFragment
-import com.example.weatherforcastapp.map.view.MapsActivity
 import com.example.weatherforcastapp.model.FavouriteLocation
 import com.example.weatherforcastapp.setting.view.SettingFragment
 import com.google.android.material.navigation.NavigationView
@@ -42,6 +39,7 @@ class MainActivity : AppCompatActivity() ,OnClick{
                 R.id.home_item->replaceFragment(HomeFragment(),it.title.toString())
                 R.id.favourite_item->replaceFragment(FavouriteFragment(),it.title.toString())
                 R.id.setting_item->replaceFragment(SettingFragment(),it.title.toString())
+                R.id.alerts_item->replaceFragment(AlertFragment(this),it.title.toString())
 
             }
             true

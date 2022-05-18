@@ -37,4 +37,18 @@ class Repository  private constructor(var remoteSourceInterface: RemoteSourceInt
         get() = localSourceInterface.getFavourites
 
 
+    //alert
+
+    override val getAlert: LiveData<List<Alertlocal>>
+        get() = localSourceInterface.getAlert
+
+    override fun insertAlert(alert: Alertlocal) {
+        localSourceInterface.insertAlert(alert)
+    }
+
+    override fun deleteAlert(alert: Alertlocal) {
+        localSourceInterface.deleteAlert(alert)
+    }
+
+
 }

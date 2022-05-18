@@ -2,6 +2,7 @@ package com.example.weatherforcastapp.local
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import com.example.weatherforcastapp.model.Alertlocal
 import com.example.weatherforcastapp.model.FavouriteLocation
 import com.example.weatherforcastapp.model.MyRespons
 
@@ -34,6 +35,23 @@ class ConcreteLocalSource(context: Context):LocalSourceInterface{
 
     override fun insertFavouriteLocation(favouriteLocation: FavouriteLocation) {
         dao?.insertFavouriteLocation(favouriteLocation)
+    }
+
+    //alerts
+    override fun insertAlert(alert: Alertlocal) {
+        dao?.insertAlert(alert)    }
+
+    override val getAlert: LiveData< List<Alertlocal>>
+        init {
+//        val db: MyDataBase? = MyDataBase.getInstance(context)
+//        dao = db?.weatherDAO()
+            getAlert = dao!!.getAlert
+        }
+
+
+
+    override fun deleteAlert(alert: Alertlocal) {
+        dao?.deleteAlert(alert)
     }
 
 

@@ -77,46 +77,45 @@ class HomeFragment : Fragment() {
     private lateinit var progressBar:ProgressBar
     private lateinit var image:CircleImageView
 
-     var myLat:String ="30.033333"
-   var myLong :String = "-90"//"31.233334"
+    var myLat:String ="30.033333"
+    var myLong :String = "-90"//"31.233334"
 
     lateinit var fLat:String
-   lateinit var fLong :String
+    lateinit var fLong :String
     lateinit var language:String
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
- lateinit var  units:String
+    lateinit var  units:String
+    lateinit var sharedPreferencesseting:SharedPreferences
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
-
+    var isMapEnable :Boolean? = true
+   lateinit var  editor :SharedPreferences.Editor
+   lateinit var   sharedPreferences: SharedPreferences
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         PreferenceManager.setDefaultValues(requireContext(),R.xml.preference,false)
-        val sharedPreferencesseting = PreferenceManager.getDefaultSharedPreferences(requireContext())
-         units = sharedPreferencesseting.getString("UNIT_SYSTEM","metric").toString()
+         sharedPreferencesseting = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        units = sharedPreferencesseting.getString("UNIT_SYSTEM","metric").toString()
         language =  sharedPreferencesseting.getString("LANGUAGE_SYSTEM","en").toString()
-//        if(language .equals("ar")){
-//           setLocale(requireActivity(),"ar")
-//           // language("ar")
-//        }
 
         val configuration: Configuration = requireContext().resources.configuration
         var locale = Locale(language)
         Locale.setDefault(locale)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             configuration.setLocale(locale)
-
         } else {
             configuration.locale = locale
         }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             activity?.getApplicationContext()?.createConfigurationContext(configuration);
             resources.updateConfiguration(configuration, resources.displayMetrics)
-
         }
       // language = Locale.getDefault().getDisplayLanguage()
-        val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("MyPrefrence", Context.MODE_PRIVATE)
+         sharedPreferences = requireActivity().getSharedPreferences("MyPrefrence", Context.MODE_PRIVATE)
+        editor = sharedPreferences.edit()
+
         initUI(view)
         initHoursRecycler(view)
         initDaysRecycler(view)
@@ -134,33 +133,38 @@ class HomeFragment : Fragment() {
                     if (weather != null)
                         updateUI(weather)
                 }
-            val editor = sharedPreferences.edit()
             editor.putBoolean("Favourite",false)
             editor.commit()
 
         }else {
-           // if(sharedPreferencesseting.getBoolean("USE_DEVICE_LOCATION",true)){}
-//            val mapPreference: Preference? = findPreference("CUSTOM_LOCATION")
-//            mapPreference?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-//                if (sharedPreferences.getBoolean("CUSTOM_LOCATION", true)) {
-//                 //navigate to map activity
-//                }
-//                true
-//            }
+         var isEnable = sharedPreferencesseting.getBoolean("USE_DEVICE_LOCATION",true)
+           // var isMapEnable = true // if(sharedPreferencesseting.getBoolean("USE_DEVICE_LOCATION",true)==null){true}else{sharedPreferencesseting.getBoolean("USE_DEVICE_LOCATION",true)}
+          if(isEnable){
+                if (isNetworkAvailable(requireContext())) {
+                        getLastLocation()
 
-        if(isNetworkAvailable(requireContext())) {
-
-            getLastLocation()
-
-            } else {
-                viewModel.getWeatherfromDataBase().observe(viewLifecycleOwner) { weather ->
-                    if (weather != null) {
-                        updateUI(weather)
-                    }
+                } else {
+                        viewModel.getWeatherfromDataBase().observe(viewLifecycleOwner) { weather ->
+                            if (weather != null) {
+                                updateUI(weather)
+                            }
+                        }
                 }
+            }else{
+                var maplat =  sharedPreferences.getString("mapLat","30").toString()//activity?.intent?.getStringExtra("lat").toString()
+                var maplng = sharedPreferences.getString("mapLng","-90").toString()//activity?.intent?.getStringExtra("lng").toString()
+                viewModel.getWeather(maplat,maplng ,units, language)
+                    .observe(viewLifecycleOwner) { weather ->
+                        if (weather != null)
+                            updateUI(weather)
+                    }
+
             }
         }
+
     }
+
+
 
     private fun initUI(view: View){
         txtCity = view.findViewById(R.id.city_textView)
@@ -324,6 +328,7 @@ class HomeFragment : Fragment() {
 
     }
 
+
     private val locationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             super.onLocationResult(locationResult)
@@ -340,7 +345,32 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        getLastLocation()
+        if( sharedPreferences.getBoolean("Favourite", false)){
+
+            myLat = sharedPreferences.getString("lat", "30").toString()
+            myLong = sharedPreferences.getString("lng", "-90").toString()
+            viewModel.getWeather(myLat,myLong ,units, language)
+                .observe(viewLifecycleOwner) { weather ->
+                    if (weather != null)
+                        updateUI(weather)
+                }
+            editor.putBoolean("Favourite",false)
+            editor.commit()
+
+        }else {
+            var isEnable = sharedPreferencesseting.getBoolean("USE_DEVICE_LOCATION",true)
+            // var isMapEnable = true // if(sharedPreferencesseting.getBoolean("USE_DEVICE_LOCATION",true)==null){true}else{sharedPreferencesseting.getBoolean("USE_DEVICE_LOCATION",true)}
+            if(isEnable){
+             getLastLocation()}else{
+                var maplat =  sharedPreferences.getString("mapLat","30").toString()//activity?.intent?.getStringExtra("lat").toString()
+                var maplng = sharedPreferences.getString("mapLng","-90").toString()
+                viewModel.getWeather(maplat,maplng ,units, language)
+                    .observe(viewLifecycleOwner) { weather ->
+                        if (weather != null)
+                            updateUI(weather)
+                    }
+            }
+        }
     }
 
     fun units(){
@@ -360,13 +390,5 @@ class HomeFragment : Fragment() {
         }
     }
 
-    fun setLocale(activity: Activity, languageCode: String?) {
-        val locale = Locale(languageCode)
-        Locale.setDefault(locale)
-        val resources: Resources = activity.resources
-        val config: Configuration = resources.getConfiguration()
-        config.setLocale(locale)
-        resources.updateConfiguration(config, resources.getDisplayMetrics())
-    }
 
 }

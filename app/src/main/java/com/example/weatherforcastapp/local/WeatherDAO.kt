@@ -2,6 +2,7 @@ package com.example.weatherforcastapp.local
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.example.weatherforcastapp.model.Alertlocal
 import com.example.weatherforcastapp.model.FavouriteLocation
 
 import com.example.weatherforcastapp.model.MyRespons
@@ -19,6 +20,15 @@ interface WeatherDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFavouriteLocation(favouriteLocation: FavouriteLocation)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAlert(alert: Alertlocal)
+
+    @get:Query("SELECT * FROM alert")
+    val getAlert: LiveData<List<Alertlocal>>
+
+    @Delete
+    fun deleteAlert(alert: Alertlocal)
 
 
 }

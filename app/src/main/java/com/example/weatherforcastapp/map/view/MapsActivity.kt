@@ -1,25 +1,24 @@
 package com.example.weatherforcastapp.map.view
 
-//import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.location.Address
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.example.weatherforcastapp.R
 import com.example.weatherforcastapp.databinding.ActivityMapsBinding
-
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import android.location.Geocoder
-import android.view.Window
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
-import com.example.weatherforcastapp.home.viewmodel.HomeViewModel
-import com.example.weatherforcastapp.home.viewmodel.HomeViewModelFactory
+import androidx.preference.PreferenceManager
+import com.example.weatherforcastapp.MainActivity
+import com.example.weatherforcastapp.home.view.HomeFragment
 import com.example.weatherforcastapp.local.ConcreteLocalSource
 import com.example.weatherforcastapp.map.viewmodel.MapViewModel
 import com.example.weatherforcastapp.map.viewmodel.MapViewModelFactory
@@ -35,6 +34,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMapsBinding
     lateinit var mapViewModelFactory: MapViewModelFactory
     lateinit var viewModel:MapViewModel
+     lateinit var city: String
+    lateinit var  country: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +56,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.setOnMapClickListener { point ->
-            showConfirmDialog(point)
+            val geocoder = Geocoder(applicationContext, Locale.getDefault())
+            val addresses: List<Address> = geocoder.getFromLocation(point.latitude, point.longitude, 1)
+
+            if(!addresses[0].getLocality() .isNullOrEmpty()){
+                city = addresses[0].getLocality()
+                country = addresses[0].getCountryName()
+            showConfirmDialog(point)}
         }
         // Add a marker in Sydney and move the camera
 //        val sydney = LatLng(-34.0, 151.0)
@@ -64,26 +71,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    private fun showConfirmDialog(point: LatLng) {
+    private fun showConfirmDialog(point: LatLng ) {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+
         val builder: AlertDialog.Builder =  AlertDialog.Builder(this)
         builder.setCancelable(true)
         builder.setTitle(getString(R.string.confirmation_message))
         builder.setMessage(getString(R.string.Do_You_want))
         builder.setPositiveButton(getString(R.string.ok)) { dialog, which ->
-
-            val geocoder = Geocoder(applicationContext, Locale.getDefault())
-            val addresses: List<Address> = geocoder.getFromLocation(point.latitude, point.longitude, 1)
-            //  val address: String = addresses[0].getAddressLine(0)
-                val city: String = addresses[0].getLocality()
-            // val state: String = addresses[0].getAdminArea()
-            //  val zip: String = addresses[0].getPostalCode()
-            val country: String = addresses[0].getCountryName()
+            if(sharedPreferences.getBoolean("USE_DEVICE_LOCATION",true)){
             viewModel.insertFavouriteLocation(FavouriteLocation(point.latitude.toString(),point.longitude.toString(),city))
             Toast.makeText(
                 applicationContext,
                 point.latitude.toString() + ", " + point.longitude+country+" ,"+city, Toast.LENGTH_SHORT).show()
-            finish()
-            //startActivity()
+                //startActivity(Intent(applicationContext,MainActivity::class.java))
+
+               finish()
+            }else{
+                val intent = Intent(applicationContext,MainActivity::class.java)
+//                intent.putExtra("lat",point.latitude.toString())
+//                intent.putExtra("lng",point.longitude.toString())
+                val sharedPreferences: SharedPreferences = getSharedPreferences("MyPrefrence", Context.MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.putString("mapLat",point.latitude.toString())
+                editor.putString("mapLng",point.longitude.toString())
+                editor.commit()
+                startActivity(intent)
+            }
         }
         builder.setNegativeButton(android.R.string.cancel){ dialog, which -> }
         val dialog: AlertDialog = builder.create()
