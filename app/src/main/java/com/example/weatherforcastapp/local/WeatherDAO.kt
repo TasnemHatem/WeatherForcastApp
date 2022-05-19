@@ -30,5 +30,8 @@ interface WeatherDAO {
     @Delete
     fun deleteAlert(alert: Alertlocal)
 
+    @Delete
+    fun deleteFavourite(favouriteLocation: FavouriteLocation)
+
 
 }

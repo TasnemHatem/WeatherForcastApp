@@ -29,7 +29,6 @@ import java.util.*
 
 
 
-
 class AlertFragment(private var myContext: Context) : Fragment(), AlertCommunicator {
     private lateinit var alertViewModel: AlertViewModel
     private lateinit var alertViewModelFactory: AlertViewModelFactory

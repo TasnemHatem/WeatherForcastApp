@@ -39,6 +39,8 @@
             android:entryValues="@array/langSystemValues"
             android:key="LANGUAGE_SYSTEM"
             android:title="@string/lang_system"
-            android:summary="%s"/>
+            android:summary="%s">
+
+        </ListPreference>
     </PreferenceCategory>
 </PreferenceScreen>

@@ -36,6 +36,9 @@ class Repository  private constructor(var remoteSourceInterface: RemoteSourceInt
     override val getFavourites: LiveData<List<FavouriteLocation>>
         get() = localSourceInterface.getFavourites
 
+    override fun deleteFavourite(favouriteLocation: FavouriteLocation) {
+        localSourceInterface.deleteFavourite(favouriteLocation)
+    }
 
     //alert
 

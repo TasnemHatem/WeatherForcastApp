@@ -21,8 +21,6 @@ myContext: Context
     private var alertResponseMutableLiveData = MutableLiveData<List<Alert>>()
     var alertResponseLiveData: LiveData<List<Alert>> = alertResponseMutableLiveData
 
-//    private var alertMutableLiveData = MutableLiveData<List<AlertTable>>()
-//    var alertLiveData: LiveData<List<AlertTable>> = alertMutableLiveData
 
     private lateinit var lang: String
     private lateinit var lat: String
@@ -30,27 +28,6 @@ myContext: Context
 
     private lateinit var sharedPreferences: SharedPreferences
 
-//    init {
-//        sharedPreferences =
-//            myContext.getSharedPreferences(SettingViewModel.SHARED_PREF_NAME, Context.MODE_PRIVATE)
-//
-//        getSetting()
-//    }
-
-
-//    fun getSetting(): Int {
-//        val language = sharedPreferences.getInt(SettingViewModel.LANGUAGE_NAME, 0)
-//        lat = sharedPreferences.getString("lat", "0")!!
-//        lng = sharedPreferences.getString("lng", "0")!!
-//
-//        lang = when (language) {
-//            0 -> "en"
-//            1 -> "ar"
-//            else -> "en"
-//        }
-//
-//        return sharedPreferences.getInt(NOTIFICATION_NAME, 1)
-//    }
 
 
     fun insertAlertToDb(alert: Alertlocal) {

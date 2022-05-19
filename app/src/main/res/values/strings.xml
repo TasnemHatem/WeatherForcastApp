@@ -32,4 +32,5 @@
     <string name="fri">Fri</string>
     <string name="sat">Sat</string>
     <string name="Alerts">Alerts</string>
+    <string name="Weather_Forecast" >Weather Forecast</string>
 </resources>

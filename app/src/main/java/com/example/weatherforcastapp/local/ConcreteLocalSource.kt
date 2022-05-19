@@ -37,6 +37,10 @@ class ConcreteLocalSource(context: Context):LocalSourceInterface{
         dao?.insertFavouriteLocation(favouriteLocation)
     }
 
+    override fun deleteFavourite(favouriteLocation: FavouriteLocation) {
+        dao?.deleteFavourite(favouriteLocation)
+    }
+
     //alerts
     override fun insertAlert(alert: Alertlocal) {
         dao?.insertAlert(alert)    }

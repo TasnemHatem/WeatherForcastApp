@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.weatherforcastapp.R
@@ -39,8 +40,12 @@ class DaysAdapter(var context: Context?, var dayList: List<Daily> ) : RecyclerVi
     }
 
     override fun onBindViewHolder(holder: DaysAdapter.ViewHolder, position: Int) {
+      var  sharedPreferencesseting = PreferenceManager.getDefaultSharedPreferences(context)
+
+      var  language =  sharedPreferencesseting.getString("LANGUAGE_SYSTEM","en").toString()
+
         var current = dayList[position]
-        holder.txtDay.setText(dateFormat(current.dt,context))
+        holder.txtDay.setText(dateFormat(current.dt,context,language))
         holder.txtTemp.setText("${current.temp.max.toInt()}/${current.temp.min.toInt()}")
         holder.txtStatus.setText(current.weather[0].description)
 
@@ -49,21 +54,47 @@ class DaysAdapter(var context: Context?, var dayList: List<Daily> ) : RecyclerVi
     }
 
     @SuppressLint("ResourceType")
-    fun dateFormat(milliSeconds: Int, context: Context?):String{
+    fun dateFormat(milliSeconds: Int, context: Context?,language :String):String {
         val calendar: Calendar = Calendar.getInstance()
         calendar.setTimeInMillis(milliSeconds.toLong() * 1000)
-        var day=calendar.get(Calendar.DAY_OF_WEEK)
-
-        return when (day) {
-            1 -> context?.resources?.getString(R.string.sun).toString() //"Sun"
-            2 -> context?.resources?.getString(R.string.mon).toString() //"Mon"
-            3 -> context?.resources?.getString(R.string.tue).toString() // "Tue"
-            4 -> context?.resources?.getString(R.string.wed).toString()//"Wed"
-            5 -> context?.resources?.getString(R.string.thu).toString()//"Thu"
-            6 -> context?.resources?.getString(R.string.fri).toString()// "Fri"
-            7 -> context?.resources?.getString(R.string.sat).toString()//"Sat"
-            else -> "no"
+        var day = calendar.get(Calendar.DAY_OF_WEEK)
+        if (language.equals("en")) {
+            return when (day) {
+                    1 -> context?.resources?.getString(R.string.sun).toString() //"Sun"
+                    2 -> context?.resources?.getString(R.string.mon).toString() //"Mon"
+                    3 -> context?.resources?.getString(R.string.tue).toString() // "Tue"
+                    4 -> context?.resources?.getString(R.string.wed).toString()//"Wed"
+                    5 -> context?.resources?.getString(R.string.thu).toString()//"Thu"
+                    6 -> context?.resources?.getString(R.string.fri).toString()// "Fri"
+                    7 -> context?.resources?.getString(R.string.sat).toString()//"Sat"
+                    else -> "no"
+            }
+        } else if (language.equals("ar")) {
+            return when (day) {
+                1 -> "الأحد" //"Sun"
+                2 -> "الاتنين"//"Mon"
+                3 -> "الثلاثاء" // "Tue"
+                4 -> "الاربعاء"//"Wed"
+                5 -> "الخميس"//"Thu"
+                6 -> "الجمعه"// "Fri"
+                7 -> "السبت"//"Sat" }
+                else -> "no"
+            }
         }
+      else{
+            return when (day) {
+                1 -> context?.resources?.getString(R.string.sun).toString() //"Sun"
+                2 -> context?.resources?.getString(R.string.mon).toString() //"Mon"
+                3 -> context?.resources?.getString(R.string.tue).toString() // "Tue"
+                4 -> context?.resources?.getString(R.string.wed).toString()//"Wed"
+                5 -> context?.resources?.getString(R.string.thu).toString()//"Thu"
+                6 -> context?.resources?.getString(R.string.fri).toString()// "Fri"
+                7 -> context?.resources?.getString(R.string.sat).toString()//"Sat"
+                else -> "no"
+        }
+    }}
+
+    fun setLanguage(language:String){
 
     }
 }

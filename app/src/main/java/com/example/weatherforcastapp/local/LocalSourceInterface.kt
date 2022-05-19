@@ -10,7 +10,7 @@ interface LocalSourceInterface {
     fun insertFavouriteLocation(favouriteLocation: FavouriteLocation)
     val getWeather: LiveData<MyRespons>
     val getFavourites: LiveData<List<FavouriteLocation>>
-
+    fun deleteFavourite(favouriteLocation: FavouriteLocation)
 
     //alerts
     fun insertAlert(alert: Alertlocal)

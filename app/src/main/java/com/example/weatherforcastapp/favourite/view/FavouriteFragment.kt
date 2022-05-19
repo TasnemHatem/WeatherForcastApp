@@ -2,12 +2,14 @@ package com.example.weatherforcastapp.favourite.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforcastapp.R
@@ -23,7 +25,7 @@ import com.example.weatherforcastapp.network.RemoteSource
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
-class FavouriteFragment : Fragment() {
+class FavouriteFragment : Fragment(),OnClickFavourite {
 
     private lateinit var favouriterecyclerView: RecyclerView
     private lateinit var favouritList: List<FavouriteLocation>
@@ -32,7 +34,9 @@ class FavouriteFragment : Fragment() {
     lateinit var  layoutManager:LinearLayoutManager
 
     lateinit var favouriteViewModelFactory: FavouriteViewModelFactory
-    lateinit var viewModel:FavouriteViewModel
+   lateinit  var viewModel:FavouriteViewModel
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,7 +49,7 @@ class FavouriteFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initUI(view)
         initViewMadel()
-        viewModel.getFavouritefromDataBase().observe(viewLifecycleOwner) { favoruites ->
+        viewModel?.getFavouritefromDataBase()?.observe(viewLifecycleOwner) { favoruites ->
                             if (favoruites != null)
                                 updateUI(favoruites)
                                    }
@@ -68,9 +72,10 @@ class FavouriteFragment : Fragment() {
        favouriterecyclerView.adapter = favouriteAdapter
     }
 
-    fun initViewMadel(){
-        favouriteViewModelFactory = FavouriteViewModelFactory(Repository.getInstance(RemoteSource.getInstance(), ConcreteLocalSource(requireActivity().applicationContext), activity?.applicationContext))
-        viewModel = ViewModelProvider(this, favouriteViewModelFactory)[FavouriteViewModel::class.java]
+    fun initViewMadel() {
+        favouriteViewModelFactory = FavouriteViewModelFactory(
+            Repository.getInstance(RemoteSource.getInstance(), ConcreteLocalSource(requireActivity().applicationContext), activity?.applicationContext))
+        viewModel = ViewModelProvider(this, favouriteViewModelFactory!!)[FavouriteViewModel::class.java]
     }
 
     private fun updateUI(favoruites: List<FavouriteLocation>) {
@@ -78,7 +83,15 @@ class FavouriteFragment : Fragment() {
 
     }
 
+    override fun deleteFavourite(favouriteLocation: FavouriteLocation) {
+        //initViewMadel()
+        Log.i("tasnem","in delet fragment")
+//        viewModel.deleteFavourite(favouriteLocation)
+//        viewModel.getFavouritefromDataBase().observe(viewLifecycleOwner) { favoruites ->
+//            if (favoruites != null)
+//                updateUI(favoruites)
+//        }
 
-
+    }
 
 }

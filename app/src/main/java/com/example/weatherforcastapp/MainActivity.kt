@@ -84,4 +84,8 @@ class MainActivity : AppCompatActivity() ,OnClick{
 //        intent.putExtra("lng",favouriteLocation.lng)
 //        startActivity(intent)
     }
+
+    override fun deleteFavourite(favouriteLocation: FavouriteLocation) {
+
+    }
 }

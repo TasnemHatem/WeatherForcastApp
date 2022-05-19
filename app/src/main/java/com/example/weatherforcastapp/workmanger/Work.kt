@@ -11,6 +11,7 @@ import android.content.SharedPreferences
 import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
@@ -21,13 +22,16 @@ import com.example.weatherforcastapp.R
 import com.example.weatherforcastapp.local.ConcreteLocalSource
 import com.example.weatherforcastapp.model.Repository
 import com.example.weatherforcastapp.network.RemoteSource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 
 class Work (var context: Context, workerParams: WorkerParameters) :
     CoroutineWorker(context, workerParams) {
 
     var weatherRepo: Repository = Repository.getInstance(RemoteSource.getInstance(), ConcreteLocalSource(context), context)
-
+    var alertWindowManger: AlertWindowManger? = null
     val sharedPreferencesseting = PreferenceManager.getDefaultSharedPreferences(context)
    var units = sharedPreferencesseting.getString("UNIT_SYSTEM","metric").toString()
   var  language =  sharedPreferencesseting.getString("LANGUAGE_SYSTEM","en").toString()
@@ -38,7 +42,6 @@ class Work (var context: Context, workerParams: WorkerParameters) :
 
     override suspend fun doWork(): Result {
         var response = weatherRepo.getWeather(myLat,  myLong, units, language)
-
         if (response?.alerts == null) {
             showNotification("Hurray!! It's a good News", "The weather is good")
         } else {
@@ -58,7 +61,12 @@ class Work (var context: Context, workerParams: WorkerParameters) :
                 showNotification("Hurray!! It's a good News", "The weather is good")
             }
         }
-
+        if (Settings.canDrawOverlays(context)) {
+            GlobalScope.launch(Dispatchers.Main) {
+                alertWindowManger = AlertWindowManger(context, "Hurray!! It's a good News")
+                alertWindowManger!!.setMyWindowManger()
+            }
+        }
         return Result.success()
     }
 
@@ -89,10 +97,10 @@ class Work (var context: Context, workerParams: WorkerParameters) :
             channel.description = desc
             channel.description = desc
             channel.setSound(
-                soundUri, audioAttributes
+                soundUri, audioAttributes)
 //                Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/raw/weathersound"),
 //                audioAttributes
-            )
+ //           )
             val notificationManager = applicationContext.getSystemService(
                 NotificationManager::class.java
             )

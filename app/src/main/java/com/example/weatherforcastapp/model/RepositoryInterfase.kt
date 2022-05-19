@@ -10,6 +10,8 @@ interface RepositoryInterfase {
     fun insertFavouriteLocation(favouriteLocation: FavouriteLocation)
     val getFavourites: LiveData<List<FavouriteLocation>>
 
+    fun deleteFavourite(favouriteLocation: FavouriteLocation)
+
     //alerts
     fun insertAlert(alert: Alertlocal)
    val getAlert: LiveData<List<Alertlocal>>
