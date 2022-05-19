@@ -79,10 +79,6 @@ class MainActivity : AppCompatActivity() ,OnClick{
         var fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frameLayout,HomeFragment())
         fragmentTransaction.commit()
-//        var intent = Intent(applicationContext, MapsActivity::class.java)
-//        intent.putExtra("lat",favouriteLocation.lat)
-//        intent.putExtra("lng",favouriteLocation.lng)
-//        startActivity(intent)
     }
 
     override fun deleteFavourite(favouriteLocation: FavouriteLocation) {

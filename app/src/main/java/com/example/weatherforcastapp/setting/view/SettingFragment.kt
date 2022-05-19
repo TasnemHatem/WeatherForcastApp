@@ -21,8 +21,6 @@ import java.util.*
 class SettingFragment :  PreferenceFragmentCompat(){
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preference,rootKey)
-//        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-//        val units = sharedPreferences.getString("UNIT_SYSTEM","metric")
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val language = sharedPreferences.getString("LANGUAGE_SYSTEM", "").toString()

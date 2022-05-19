@@ -43,7 +43,7 @@ class Work (var context: Context, workerParams: WorkerParameters) :
     override suspend fun doWork(): Result {
         var response = weatherRepo.getWeather(myLat,  myLong, units, language)
         if (response?.alerts == null) {
-            showNotification("Hurray!! It's a good News", "The weather is good")
+            showNotification(" It's a good News", "The weather is good")
         } else {
 
 

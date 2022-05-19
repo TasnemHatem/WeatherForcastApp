@@ -82,10 +82,6 @@ class WorkManagerAccess private constructor(private var myContext: Context) {
 
         val diff: Long = calendar1.timeInMillis - calendar2.timeInMillis
         val seconds = diff / 1000
-//        val minutes = seconds / 60
-//        val hours = minutes / 60
-//        val days = hours / 24
-
         return seconds
     }
 }
