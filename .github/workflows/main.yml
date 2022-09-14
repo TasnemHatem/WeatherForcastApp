@@ -24,10 +24,12 @@ jobs:
         with:
           java-version: 1.8
           
-      - name: Build with Gradel
-        run: ./gradlew build
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+          
+      - name: Build with Gradel
+        run: ./gradlew build
+      
         
       - name: Upload apk
         uses: actions/upload-artifact@v3.1.0
