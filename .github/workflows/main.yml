@@ -26,6 +26,8 @@ jobs:
           
       - name: Build with Gradel
         run: ./gradlew build
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
         
       - name: Upload apk
         uses: actions/upload-artifact@v3.1.0
