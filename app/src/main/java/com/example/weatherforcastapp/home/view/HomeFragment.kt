@@ -62,6 +62,8 @@ class HomeFragment : Fragment() {
     private lateinit var txtStatus:TextView
     private lateinit var txtTemp : TextView
     //units
+
+
     private lateinit var txtTempUnite : TextView
     private lateinit var txtWindUnite : TextView
 
