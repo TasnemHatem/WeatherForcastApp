@@ -27,7 +27,7 @@ jobs:
 
           
       - name: Build with Gradel
-        run: ./gradlew assemble
+        run: ./gradlew build
       
         
       - name: Upload apk
